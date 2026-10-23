@@ -47,15 +47,34 @@ jobs:
       - name: Publish
         run: npm publish --provenance --access public
 
-      # The Release is created only after a successful publish, so a red publish
-      # never leaves a release page advertising a version the registry lacks.
+      # Registry ingestion is asynchronous: 0.6.4 showed up in seconds, 0.6.5 took
+      # ~10 minutes. Poll before advertising the version on the Release page, and
+      # treat a timeout as "maybe staged for approval" rather than a hard failure.
+      - name: Verify the version reached the registry
+        id: verify
+        continue-on-error: true
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          for attempt in $(seq 1 60); do
+            if npm view "dsh-cloudflare-media@${version}" version >/dev/null 2>&1; then
+              echo "::notice::dsh-cloudflare-media@${version} is live on the registry"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::warning::dsh-cloudflare-media@${version} still absent after 10 minutes — check for a staged publish needing approval"
+          exit 1
+
       - name: Pack tarball
+        if: steps.verify.outcome == 'success'
         run: npm pack
 
       - name: Build release notes from CHANGELOG
+        if: steps.verify.outcome == 'success'
         run: node scripts/release-notes.mjs "${GITHUB_REF_NAME#v}" > release-notes.md
 
       - name: Create GitHub Release
+        if: steps.verify.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
