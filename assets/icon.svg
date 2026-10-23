@@ -1,0 +1,41 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FBF6EA"/>
+      <stop offset="1" stop-color="#EFE4CE"/>
+    </linearGradient>
+    <linearGradient id="bolt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F7A64B"/>
+      <stop offset="1" stop-color="#EC7B2E"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="8" y="8" width="496" height="496" rx="112" fill="url(#bg)"/>
+  <rect x="8" y="8" width="496" height="496" rx="112" fill="none" stroke="#1F2933" stroke-width="12"/>
+
+  <!-- cloud -->
+  <path d="M150 348
+           C 104 348 68 314 68 270
+           C 68 230 98 197 137 190
+           C 149 140 194 104 248 104
+           C 300 104 344 138 358 186
+           C 405 193 436 229 436 272
+           C 436 316 400 348 354 348 Z"
+        fill="#FFFDF7" stroke="#1F2933" stroke-width="13" stroke-linejoin="round"/>
+
+  <!-- lightning -->
+  <path d="M276 146 L206 268 L252 268 L228 356 L318 226 L268 226 Z"
+        fill="url(#bolt)" stroke="#1F2933" stroke-width="13" stroke-linejoin="round"/>
+
+  <!-- sage waveform -->
+  <g stroke="#7BA05B" stroke-width="16" stroke-linecap="round">
+    <path d="M150 392 L150 414"/>
+    <path d="M190 376 L190 430"/>
+    <path d="M230 392 L230 414"/>
+  </g>
+  <g stroke="#1F2933" stroke-width="16" stroke-linecap="round">
+    <path d="M270 384 L270 422"/>
+    <path d="M310 368 L310 438"/>
+    <path d="M350 388 L350 418"/>
+  </g>
+</svg>

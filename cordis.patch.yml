@@ -1,0 +1,3 @@
+- insert:
+    - id: cloudflare-media
+      name: dsh-cloudflare-media

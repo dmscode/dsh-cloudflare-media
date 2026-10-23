@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  :root{
+    --ink:#1F2933; --ink-2:#4A5560; --paper:#F7F2E7; --card:#FFFDF8;
+    --sage:#7BA05B; --sage-soft:#E6EEDC; --amber:#F0902F; --amber-soft:#FCEBD6;
+    --line:#D8CDB8;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--paper);}
+  body{
+    width:1600px;height:900px;overflow:hidden;position:relative;
+    font-family:"Microsoft YaHei","Segoe UI",system-ui,sans-serif;color:var(--ink);
+    background:
+      radial-gradient(900px 600px at 88% 8%, #FCEBD6 0%, rgba(252,235,214,0) 70%),
+      radial-gradient(800px 500px at 6% 96%, #E6EEDC 0%, rgba(230,238,220,0) 70%),
+      var(--paper);
+  }
+  .grid{position:absolute;inset:0;opacity:.35;
+    background-image:linear-gradient(#E5DAC5 1px,transparent 1px),linear-gradient(90deg,#E5DAC5 1px,transparent 1px);
+    background-size:40px 40px;}
+  .frame{position:absolute;inset:26px;border:1.5px solid rgba(31,41,51,.14);border-radius:26px;}
+
+  .wrap{position:relative;display:grid;grid-template-columns:820px 1fr;height:100%;padding:74px 78px 66px 88px;gap:40px;align-items:stretch;}
+  .wrap>section:first-child{display:flex;flex-direction:column;height:100%;}
+
+  /* left */
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:15px;letter-spacing:.16em;
+    color:#6B6252;text-transform:uppercase;font-weight:700;}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--sage);}
+  h1{margin:22px 0 0;font-size:66px;line-height:1.14;letter-spacing:-.5px;font-weight:800;}
+  h1 em{font-style:normal;color:var(--amber);}
+  .sub{margin:20px 0 0;font-size:23px;line-height:1.6;color:var(--ink-2);max-width:640px;}
+  .sub b{color:var(--ink);font-weight:700;}
+
+  .feats{margin-top:38px;display:grid;grid-template-columns:1fr 1fr;gap:16px 22px;}
+  .feat{display:flex;gap:13px;align-items:flex-start;}
+  .chip{width:38px;height:38px;border-radius:11px;flex:0 0 38px;display:grid;place-items:center;
+    border:1.5px solid var(--ink);background:var(--card);}
+  .chip svg{width:20px;height:20px;}
+  .feat h3{margin:0;font-size:18.5px;font-weight:800;}
+  .feat p{margin:4px 0 0;font-size:14.5px;color:#6B6252;line-height:1.45;}
+
+  .badges{margin-top:auto;padding-top:34px;display:flex;gap:12px;}
+  .badge{font-size:14.5px;font-weight:700;padding:8px 14px;border-radius:999px;border:1.5px solid var(--ink);
+    background:var(--card);}
+  .badge.sage{background:var(--sage-soft);border-color:#5E7F45;}
+  .badge.amber{background:var(--amber-soft);border-color:#C9721F;}
+
+  /* right: settings card mock */
+  .card{position:relative;align-self:center;background:var(--card);border:2px solid var(--ink);
+    border-radius:24px;box-shadow:0 26px 0 -12px rgba(31,41,51,.10), 0 30px 60px rgba(31,41,51,.16);
+    padding:26px 26px 22px;}
+  .card-head{display:flex;align-items:center;gap:14px;padding-bottom:18px;border-bottom:1.5px dashed var(--line);}
+  .logo{width:52px;height:52px;border-radius:14px;border:1.5px solid var(--ink);overflow:hidden;background:#FBF6EA;}
+  .logo img{width:100%;height:100%;display:block;}
+  .card-head h2{margin:0;font-size:22px;font-weight:800;letter-spacing:.2px;}
+  .card-head span{display:block;margin-top:3px;font-size:13.5px;color:#7A7160;}
+  .ver{margin-left:auto;font-size:13px;font-weight:800;color:#5E7F45;background:var(--sage-soft);
+    border:1.5px solid #5E7F45;border-radius:999px;padding:5px 11px;}
+
+  .sect{margin-top:18px;font-size:12.5px;letter-spacing:.12em;font-weight:800;color:#8A8170;text-transform:uppercase;}
+  .row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #EFE7D6;}
+  .row:last-child{border-bottom:none;}
+  .label{font-size:15.5px;font-weight:700;width:104px;color:#4A5560;flex:0 0 auto;}
+  .field{flex:1;font-size:15px;background:#F5EFE1;border:1.5px solid var(--line);border-radius:10px;
+    padding:9px 12px;color:#3A434C;font-family:ui-monospace,Consolas,monospace;}
+  .tag{font-size:12.5px;font-weight:800;border-radius:999px;padding:4px 9px;border:1.5px solid;flex:0 0 auto;}
+  .tag.cheap{color:#3F6B2A;border-color:#5E7F45;background:var(--sage-soft);}
+  .tag.free{color:#2F6B7A;border-color:#3E7F8F;background:#E1EFF1;}
+  .tag.std{color:#8A5A18;border-color:#C9721F;background:var(--amber-soft);}
+  .price{font-size:12.5px;color:#7A7160;padding:0 0 9px 116px;margin-top:-4px;font-variant-numeric:tabular-nums;}
+  .price b{color:#B4611C;font-weight:800;}
+  .foot{margin-top:18px;padding-top:16px;border-top:1.5px dashed var(--line);display:flex;gap:10px;}
+  .btn{flex:1;text-align:center;font-size:15px;font-weight:800;padding:11px 0;border-radius:11px;border:1.5px solid var(--ink);}
+  .btn.primary{background:var(--ink);color:#FFFDF8;}
+  .stamp{position:absolute;right:-14px;top:-16px;transform:rotate(7deg);font-size:13px;font-weight:800;
+    padding:6px 12px;border-radius:8px;background:var(--amber);color:#3A2408;border:1.5px solid var(--ink);
+    box-shadow:3px 3px 0 rgba(31,41,51,.25);}
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="frame"></div>
+
+  <div class="wrap">
+    <section>
+      <div class="eyebrow"><span class="dot"></span>DSH PLUGIN · dsh-cloudflare-media</div>
+      <h1>Cloudflare<br>Workers AI <em>多媒体</em></h1>
+      <p class="sub">在 DeepSeek Harness 里直接调用 <b>免费的图 / 声 / 字模型</b>，复用已配置的 Cloudflare 提供商，凭据只进身份库，页面只显示掩码。</p>
+
+      <div class="feats">
+        <div class="feat">
+          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="#1F2933" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9.5" r="1.7"/><path d="M4 17l5-4.5 4 3.2 3-2.4 4 3.7"/></svg></div>
+          <div><h3>文本生图</h3><p>flux · SDXL · Leonardo，模型带单价与额度占比</p></div>
+        </div>
+        <div class="feat">
+          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="#1F2933" stroke-width="1.8"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></div>
+          <div><h3>语音合成</h3><p>MelotTS 中文多语 · Deepgram Aura 英文音色</p></div>
+        </div>
+        <div class="feat">
+          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="#1F2933" stroke-width="1.8"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div>
+          <div><h3>语音转写</h3><p>Whisper turbo，支持 wav / mp3 / ogg / m4a</p></div>
+        </div>
+        <div class="feat">
+          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="#1F2933" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></div>
+          <div><h3>自检与遮蔽</h3><p>一键测试连接，Account ID 全程掩码</p></div>
+        </div>
+      </div>
+
+      <div class="badges">
+        <span class="badge sage">13 个免费模型</span>
+        <span class="badge amber">单价 × 额度 一目了然</span>
+        <span class="badge">不含任何账号信息</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="stamp">生成的文件自动带模型名</div>
+      <div class="card-head">
+        <div class="logo"><img src="icon-512.png" alt=""></div>
+        <div>
+          <h2>Cloudflare Workers AI 多媒体</h2>
+          <span>设置 → 插件 → dsh-cloudflare-media</span>
+        </div>
+        <div class="ver">v0.5.0</div>
+      </div>
+
+      <div class="sect">凭据</div>
+      <div class="row"><div class="label">Account ID</div><div class="field">•••• •••• •••• 315c</div></div>
+      <div class="row"><div class="label">Token 凭据名</div><div class="field">CLOUDFLARE_WORKERS_AI_API_KEY</div><div class="tag cheap">已取到</div></div>
+
+      <div class="sect">默认模型</div>
+      <div class="row"><div class="label">图片</div><div class="field">flux-1-schnell</div><div class="tag cheap">便宜</div></div>
+      <div class="price">≈ 58 neurons/张 · ≈ $0.000634 · 免费额度 0.6%</div>
+      <div class="row"><div class="label">语音</div><div class="field">melotts</div><div class="tag free">免费额度</div></div>
+      <div class="price">≈ 8 neurons/次 · ≈ $0.000085 · 中文自然</div>
+      <div class="row"><div class="label">转写</div><div class="field">whisper-large-v3-turbo</div><div class="tag std">标准</div></div>
+      <div class="price">≈ 47 neurons/分钟 · ≈ $0.000513</div>
+
+      <div class="foot">
+        <div class="btn primary">测试连接</div>
+        <div class="btn">保存设置</div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

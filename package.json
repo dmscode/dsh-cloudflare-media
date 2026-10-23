@@ -1,0 +1,60 @@
+{
+  "name": "dsh-cloudflare-media",
+  "version": "0.6.1",
+  "description": "Cloudflare Workers AI multimedia tools for DeepSeek Harness: text-to-image, text-to-speech and speech-to-text on the free Workers AI plan, with a settings page where each capability's default model is chosen.",
+  "author": "稻米鼠",
+  "license": "MIT",
+  "homepage": "https://github.com/dmscode/dsh-cloudflare-media#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmscode/dsh-cloudflare-media.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dmscode/dsh-cloudflare-media/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "cloudflare",
+    "workers-ai",
+    "text-to-image",
+    "image-generation",
+    "text-to-speech",
+    "speech-to-text"
+  ],
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/**/*.js",
+    "cordis.patch.yml",
+    "README.md",
+    "CHANGELOG.md",
+    "assets/icon.svg",
+    "assets/icon-512.png",
+    "assets/cover-1600x900.png",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  },
+  "dependencies": {
+    "schemastery": "^3.17.2"
+  },
+  "scripts": {
+    "test": "node test-catalog.mjs && node test-smoke.mjs && node test-settings.mjs"
+  }
+}
