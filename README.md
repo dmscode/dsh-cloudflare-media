@@ -45,27 +45,41 @@ Workers AI 的多媒体模型走 `POST /accounts/{account}/ai/run/{model}` + `Au
 
 ## 安装
 
-三种方式，推荐第一种：
+装完都要**重启一次 Harness**：宿主半的 HTTP 路由和浏览器半的配置卡片，都在启动时构建。
+
+### 方式一：GUI 安装框（推荐）
+
+**设置 → 插件 → 安装**，在「填入插件 npm 包名」里填：
 
 ```text
-plugin_manager  action=install_bundle  target=dsh-cloudflare-media                    # ① npm（最新稳定版）
-plugin_manager  action=install_bundle  target=github:dmscode/dsh-cloudflare-media     # ② GitHub（跟随 main）
-plugin_manager  action=install_bundle  target=<本目录的绝对路径>                       # ③ 本地开发 / 内网 tgz
+dsh-cloudflare-media
 ```
 
-也可以不经过 `plugin_manager`：
+这个输入框接受四种 spec（和 `plugin_manager` 工具、`dsh plugin` 命令是同一套语法）：
 
-- **图形界面**：设置 → 插件市场，搜 `dsh-cloudflare-media`。市场列表来自你配置的索引源（如社区目录 `dsh-plugin-health`），索引收录后即可一键安装；索引还没刷新时用下面两种方式。
-- **命令行（npx / npm 直装）**：
+| 形式 | 示例 |
+| --- | --- |
+| npm 包名（可带版本 / 标签） | `dsh-cloudflare-media`、`dsh-cloudflare-media@0.6.1` |
+| GitHub 简写或仓库 URL | `github:dmscode/dsh-cloudflare-media` |
+| 本地绝对路径 | `F:\ForAI\dsh-cloudflare-media` |
+| tarball（本地路径或 https URL） | `D:\downloads\dsh-cloudflare-media-0.6.1.tgz` |
 
-  ```powershell
-  cd "$env:USERPROFILE\.dsh\profiles\desktop"
-  npm i dsh-cloudflare-media
-  ```
+装完它会自动把包名登记进 profile 的 `dsh.profile.bundles`；包里自带的 `cordis.patch.yml` 提供插件那一行，不需要手工改。
 
-  然后在 profile 的 `cordis.patch.yml` 里加 `- id: cloudflare-media` / `name: dsh-cloudflare-media` 这一行（内容见 [部署级配置](#部署级配置可选)），重启 Harness。
+### 方式二：命令行
 
-> `plugin_manager` 的 `target` 支持包名、`github:owner/repo`、git URL 和本地路径；包名走 npm registry，`latest` 即当前发布版本。
+```powershell
+dsh plugin --profile desktop add dsh-cloudflare-media
+```
+
+- 这是官方 CLI：`dsh plugin --profile <profile> <pnpm 参数>` 把参数原样转给 profile 目录里的 pnpm，装完自动对账 `dsh.profile.bundles`；
+- 桌面版建议**先完全退出 DeepSeek Harness** 再执行，避免和桌面进程抢 profile 的写锁；
+- 其他 profile 同理：`dsh plugin --profile web add dsh-cloudflare-media`；
+- 不要把 `npm i` 当成安装：那只会改依赖，不会登记 bundle，插件不会被加载。
+
+### 方式三：让助手装
+
+直接说「装 dsh-cloudflare-media」，助手会调用 `plugin_manager` 工具（`action=install_bundle`、`target=dsh-cloudflare-media`）完成同样的安装。`plugin_manager` 是给模型用的工具，不是 shell 命令，终端里请用方式二。
 
 安装后在 **设置 → 插件 → dsh-cloudflare-media** 打开本插件的页面：
 
@@ -76,13 +90,13 @@ plugin_manager  action=install_bundle  target=<本目录的绝对路径>        
 
 > 浏览器半侧（`lib/client.js`）在 Harness 启动时进入前端插件图。若安装/更新后插件页没有出现配置卡片，重启一次 Harness（关掉再打开）即可；之后改 `lib/client.js` 会由 HMR 热替换。
 
-### 手动挂载
+### 手动挂载（开发用）
 
 ```powershell
 cmd /c mklink /J "%USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-cloudflare-media" "<本目录>"
 ```
 
-包自带 `cordis.patch.yml`，插件管理器安装时会自动插入 `cloudflare-media` 这一行；手动挂载时把该文件内容追加到 profile 的 `cordis.patch.yml` 即可。
+还要让 profile 知道这个 bundle：把 `dsh-cloudflare-media` 加进 profile `package.json` 的 `dsh.profile.bundles`（和上面 GUI/CLI 安装做的事一样）；只做目录联接、不登记，插件不会加载。
 
 ## 设置页
 
@@ -153,12 +167,12 @@ Account ID：设置页保存的 `CLOUDFLARE_ACCOUNT_ID` 凭据 → `config.accou
 npm pack          # 生成 dsh-cloudflare-media-<version>.tgz，只含 lib/、cordis.patch.yml、README、LICENSE
 ```
 
-对方拿到后三种装法：
+对方拿到后三种装法（都走同一个安装器，等价于上面「安装」一节的三种方式）：
 
-```text
-plugin_manager action=install_bundle target=dsh-cloudflare-media      # npm（推荐）
-plugin_manager action=install_bundle target=<tgz 的本地路径>          # 离线 / 内网
-plugin_manager action=install_bundle target=github:dmscode/dsh-cloudflare-media
+```powershell
+dsh plugin --profile desktop add dsh-cloudflare-media          # npm（推荐）
+dsh plugin --profile desktop add D:\downloads\dsh-cloudflare-media-0.6.1.tgz   # 离线 / 内网
+dsh plugin --profile desktop add github:dmscode/dsh-cloudflare-media           # 跟随 main
 ```
 
 装完重启一次内核（宿主半的 HTTP 路由与槽位在启动时才注册），然后在 **设置 → 插件 → dsh-cloudflare-media** 填自己的 Account ID 与 Token 凭据名即可。包里不含任何账号、Token 或本机路径。
