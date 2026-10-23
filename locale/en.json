@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Cloudflare Media (dsh-cloudflare-media)",
+    "description": "Cloudflare Workers AI multimedia tools: text-to-image, text-to-speech and speech-to-text, with per-model price tags and one settings card for model defaults."
+  }
+}

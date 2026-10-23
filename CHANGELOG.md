@@ -1,5 +1,11 @@
 # 更新日志
 
+## 0.6.3 — 2026-10-23
+
+### 新增
+- 插件列表图标：`package.json` 增加 `"icon": "./assets/icon.svg"`。宿主 `dsh-app-boot` 的 `iconOf()` 只认清单里的相对路径（要求文件留在包目录内、≤256 KiB、SVG/PNG/JPEG/WebP），所以此前一直落到默认图标。
+- 中英文显示名与简介：新增 `locale/zh.json`、`locale/en.json`（结构 `{"meta":{"title","description"}}`），并在 `exports` 放行 `"./locale/*.json"`——不放行时 ESM 解析会因 `exports` 白名单抛 `ERR_PACKAGE_PATH_NOT_EXPORTED`，本地化静默失效。
+
 ## 0.6.2 — 2026-10-23
 
 ### 文档

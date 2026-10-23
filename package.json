@@ -1,7 +1,8 @@
 {
   "name": "dsh-cloudflare-media",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Cloudflare Workers AI multimedia tools for DeepSeek Harness: text-to-image, text-to-speech and speech-to-text on the free Workers AI plan, with a settings page where each capability's default model is chosen.",
+  "icon": "./assets/icon.svg",
   "author": "稻米鼠",
   "license": "MIT",
   "homepage": "https://github.com/dmscode/dsh-cloudflare-media#readme",
@@ -31,13 +32,15 @@
   "exports": {
     ".": "./lib/index.js",
     "./client": "./lib/client.js",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json"
   },
   "files": [
     "lib/**/*.js",
     "cordis.patch.yml",
     "README.md",
     "CHANGELOG.md",
+    "locale/*.json",
     "assets/icon.svg",
     "assets/icon-512.png",
     "assets/cover-1600x900.png",

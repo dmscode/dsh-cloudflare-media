@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Cloudflare 多媒体 (dsh-cloudflare-media)",
+    "description": "Cloudflare Workers AI 多媒体工具：生图、语音合成、语音识别；带每个模型的价格标签，一张设置卡统一选默认模型。"
+  }
+}
