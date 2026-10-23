@@ -1,5 +1,11 @@
 # 更新日志
 
+## 0.6.5 — 2026-10-23
+
+### 工程
+- 发布流水线在 `npm publish` 成功后自动创建 GitHub Release：正文由 `scripts/release-notes.mjs` 从本文件的对应版本段落生成，同时附上 `npm pack` 打好的 tgz，离线安装可直接从 Release 页下载。
+- Release 只在发布成功后才创建，publish 失败不会留下「指向不存在版本」的 release 页。
+
 ## 0.6.4 — 2026-10-23
 
 ### 工程
