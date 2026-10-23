@@ -1,5 +1,12 @@
 # 更新日志
 
+## 0.6.2 — 2026-10-23
+
+### 文档
+- 安装说明改正：主路径改为 GUI 的「设置 → 插件 → 安装」填写包名 `dsh-cloudflare-media`，并给出 CLI 形式 `dsh plugin --profile desktop add dsh-cloudflare-media`。
+- 说明 `plugin_manager action=install_bundle` 是模型工具而非 shell 命令；`npm i` 只改依赖、不登记 `dsh.profile.bundles`，不能当安装命令。
+- 合并「开发」小节里重复了两遍的代码块与 lib 说明。
+
 ## 0.6.1 — 2026-10-23
 
 ### Fixed

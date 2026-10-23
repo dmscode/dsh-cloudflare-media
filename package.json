@@ -1,6 +1,6 @@
 {
   "name": "dsh-cloudflare-media",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Cloudflare Workers AI multimedia tools for DeepSeek Harness: text-to-image, text-to-speech and speech-to-text on the free Workers AI plan, with a settings page where each capability's default model is chosen.",
   "author": "稻米鼠",
   "license": "MIT",
