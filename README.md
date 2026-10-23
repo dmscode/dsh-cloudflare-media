@@ -5,7 +5,7 @@
 
 为 DeepSeek Harness 补上 **Cloudflare Workers AI** 的多媒体能力：文本生图、文本转语音、语音转文字，外加一个可用的图形设置页。
 
-作者：**稻米鼠** · 仓库：[dmscode/dsh-cloudflare-media](https://github.com/dmscode/dsh-cloudflare-media)
+作者：**稻米鼠** · 仓库：[dmscode/dsh-cloudflare-media](https://github.com/dmscode/dsh-cloudflare-media) · npm：[`dsh-cloudflare-media`](https://www.npmjs.com/package/dsh-cloudflare-media)
 
 Workers AI 的多媒体模型走 `POST /accounts/{account}/ai/run/{model}` + `Authorization: Bearer <token>`，和 OpenAI 兼容的 `chat/completions` 不是一条路，所以 `dsh-llm-pi-ai` 的文本通道覆盖不到。本插件把这条通道包成 4 个模型工具，并把「账号 / 令牌 / 三个默认模型 / 输出」放进 Harness 的插件设置页。
 
@@ -45,10 +45,27 @@ Workers AI 的多媒体模型走 `POST /accounts/{account}/ai/run/{model}` + `Au
 
 ## 安装
 
+三种方式，推荐第一种：
+
 ```text
-plugin_manager  action=install_bundle  target=github:dmscode/dsh-cloudflare-media   # 从 GitHub 安装
-plugin_manager  action=install_bundle  target=<本目录的绝对路径>                       # 本地开发
+plugin_manager  action=install_bundle  target=dsh-cloudflare-media                    # ① npm（最新稳定版）
+plugin_manager  action=install_bundle  target=github:dmscode/dsh-cloudflare-media     # ② GitHub（跟随 main）
+plugin_manager  action=install_bundle  target=<本目录的绝对路径>                       # ③ 本地开发 / 内网 tgz
 ```
+
+也可以不经过 `plugin_manager`：
+
+- **图形界面**：设置 → 插件市场，搜 `dsh-cloudflare-media`。市场列表来自你配置的索引源（如社区目录 `dsh-plugin-health`），索引收录后即可一键安装；索引还没刷新时用下面两种方式。
+- **命令行（npx / npm 直装）**：
+
+  ```powershell
+  cd "$env:USERPROFILE\.dsh\profiles\desktop"
+  npm i dsh-cloudflare-media
+  ```
+
+  然后在 profile 的 `cordis.patch.yml` 里加 `- id: cloudflare-media` / `name: dsh-cloudflare-media` 这一行（内容见 [部署级配置](#部署级配置可选)），重启 Harness。
+
+> `plugin_manager` 的 `target` 支持包名、`github:owner/repo`、git URL 和本地路径；包名走 npm registry，`latest` 即当前发布版本。
 
 安装后在 **设置 → 插件 → dsh-cloudflare-media** 打开本插件的页面：
 
@@ -130,18 +147,23 @@ Account ID：设置页保存的 `CLOUDFLARE_ACCOUNT_ID` 凭据 → `config.accou
 
 ## 分发
 
+已发布到 npm：`dsh-cloudflare-media`（当前 `0.6.1`），安装见上面的「安装」一节。需要离线分发时：
+
 ```powershell
 npm pack          # 生成 dsh-cloudflare-media-<version>.tgz，只含 lib/、cordis.patch.yml、README、LICENSE
 ```
 
-对方拿到后两种装法：
+对方拿到后三种装法：
 
 ```text
-plugin_manager action=install_bundle target=<tgz 的本地路径>
-plugin_manager action=install_bundle target=<npm 包名或 git 地址>
+plugin_manager action=install_bundle target=dsh-cloudflare-media      # npm（推荐）
+plugin_manager action=install_bundle target=<tgz 的本地路径>          # 离线 / 内网
+plugin_manager action=install_bundle target=github:dmscode/dsh-cloudflare-media
 ```
 
 装完重启一次内核（宿主半的 HTTP 路由与槽位在启动时才注册），然后在 **设置 → 插件 → dsh-cloudflare-media** 填自己的 Account ID 与 Token 凭据名即可。包里不含任何账号、Token 或本机路径。
+
+**维护者发布**：改 `package.json` 版本号 → `npm publish`（需 2FA）→ 在 GitHub 打同名 tag / release；`dsh-plugin` 关键字会让内置插件市场、dshplugin.store 等目录自动发现新版本。人工目录（awesome-dsh-plugin、dshworks）在首次收录后按 npm 版本自动跟进。
 
 ## 开发
 
@@ -184,24 +206,6 @@ Cloudflare 的模型与 neuron 单价会变，所以它们全部集中在 `lib/c
 
 设置页、状态工具、文件名中的模型短名、单价行与估算行都从这份目录派生；目录写坏时 `cloudflare_media_status` 会直接列出校验失败项。
 
-```powershell
-node --check lib/index.js; node --check lib/http-api.js; node --check lib/settings-store.js; node --check lib/client.js
-node test-settings.mjs   # 离线：设置存储、校验、掩码与 HTTP 路由
-node test-smoke.mjs      # 离线：mock ctx + mock fetch，校验 4 个工具与返回结构
-```
-
-- `lib/index.js` 宿主半：纯 ESM，第三方运行时依赖只有可选的 `schemastery`；
-- `lib/http-api.js` 设置页的后端路由（Node `(req,res)`）；
-- `lib/settings-store.js` 设置文件与优先级；
-- `lib/client.js` 浏览器半：`window.__ModuleLoader__.load({ id, factory })`，`require('react')`，无构建步骤。
-
-改宿主半（前三者）后需要重新启用插件让新代码生效；改 `lib/client.js` 由 HMR 热替换。
-
-```powershell
-plugin_manager action=set_plugin target=include:cloudflare-media enabled=false
-plugin_manager action=set_plugin target=include:cloudflare-media enabled=true
-```
-
 ## 兼容性与已知限制
 
 - 已在 DSH 桌面版（2026-10 构建）、Node.js 24.21、Windows 11 上完整验证：四个工具、设置页、5 类错误路径。
@@ -210,6 +214,7 @@ plugin_manager action=set_plugin target=include:cloudflare-media enabled=true
 - Cloudflare 没有余额查询 API；`0.011 USD/千 neurons` 与 10,000 neurons/天免费额度写死在 `lib/catalog.js` 的 `PRICING` 里，官方调价后改这一处并跑 `node test-catalog.mjs`。
 - 语音文件以路径形式返回，不会作为附件内嵌。
 - `stable-diffusion-v1-5-img2img` 需要账号已开通，部分免费账号返回 403。
+
 ## License
 
 MIT
