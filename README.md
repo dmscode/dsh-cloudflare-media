@@ -161,7 +161,7 @@ Account ID：设置页保存的 `CLOUDFLARE_ACCOUNT_ID` 凭据 → `config.accou
 
 ## 分发
 
-已发布到 npm：`dsh-cloudflare-media`（当前 `0.6.1`），安装见上面的「安装」一节。需要离线分发时：
+已发布到 npm：`dsh-cloudflare-media`（当前 `0.6.3`），安装见上面的「安装」一节。需要离线分发时：
 
 ```powershell
 npm pack          # 生成 dsh-cloudflare-media-<version>.tgz，只含 lib/、cordis.patch.yml、README、LICENSE
@@ -177,7 +177,19 @@ dsh plugin --profile desktop add github:dmscode/dsh-cloudflare-media           #
 
 装完重启一次内核（宿主半的 HTTP 路由与槽位在启动时才注册），然后在 **设置 → 插件 → dsh-cloudflare-media** 填自己的 Account ID 与 Token 凭据名即可。包里不含任何账号、Token 或本机路径。
 
-**维护者发布**：改 `package.json` 版本号 → `npm publish`（需 2FA）→ 在 GitHub 打同名 tag / release；`dsh-plugin` 关键字会让内置插件市场、dshplugin.store 等目录自动发现新版本。人工目录（awesome-dsh-plugin、dshworks）在首次收录后按 npm 版本自动跟进。
+**维护者发布（自动）**：`.github/workflows/release.yml` 监听 `v*` tag，用 npm trusted publishing（OIDC）直接发布并附带 provenance，仓库里不放任何长期 token。
+
+```powershell
+npm version patch --no-git-tag-version   # 或手动改 package.json
+git commit -am "release v0.6.4"
+git tag v0.6.4 && git push origin main --tags
+```
+
+流水线会校验 tag 与 `package.json` 版本一致、跑 `npm test`，然后 `npm publish --provenance --access public`。一次性准备：在 <https://www.npmjs.com/package/dsh-cloudflare-media/access> → Trusted publisher → 选 GitHub Actions，填 owner `dmscode`、repository `dsh-cloudflare-media`、workflow `release.yml`。
+
+> 长期 token 路线正在退场：npm 自 2027-01 起不再允许 2FA-bypass token 直接 publish（只能 stage + 人工批准）。OIDC 方案不受影响，这也是这里不用 `NPM_TOKEN` secret 的原因。
+
+`dsh-plugin` 关键字会让内置插件市场、dshplugin.store 等目录自动发现新版本。人工目录（awesome-dsh-plugin、dshworks）在首次收录后按 npm 版本自动跟进。
 
 ## 开发
 

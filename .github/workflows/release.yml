@@ -1,0 +1,48 @@
+# Publish to npm when a version tag is pushed (tag push is the release trigger).
+# Authentication is npm trusted publishing (OIDC): no long-lived token lives in
+# the repo or in secrets. The npm package must have a trusted publisher bound to
+# this repository and this workflow file first, otherwise the publish step fails
+# with E404/E401 — bind it at https://www.npmjs.com/package/dsh-cloudflare-media/access
+# → "Trusted publisher" → GitHub Actions: dmscode / dsh-cloudflare-media / release.yml.
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write # required for npm trusted publishing (OIDC) and provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          cache: npm
+
+      # The tag is the single source of truth for the release version; refusing to
+      # publish a mismatched package keeps the registry and git history in sync.
+      - name: Verify tag matches package.json version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(node -p "require('./package.json').version")"
+          if [ "$tag" != "$version" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match package.json version $version"
+            exit 1
+          fi
+
+      - run: npm ci
+
+      # All three suites run offline against mocked hosts; they guard the tool
+      # contract, the catalogue math and the settings API before anything ships.
+      - run: npm test
+
+      - name: Publish
+        run: npm publish --provenance --access public
