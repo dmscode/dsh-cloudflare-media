@@ -1,5 +1,11 @@
 # 更新日志
 
+## 0.6.4 — 2026-10-23
+
+### 工程
+- 新增 `.github/workflows/release.yml`：推送 `v*` tag 时用 npm trusted publishing（OIDC）发布并附带 provenance，先校验 tag 与 `package.json` 版本一致、再跑 `npm test`；仓库不再需要长期 npm token。
+- README「分发」更新发版流程与一次性 Trusted publisher 绑定步骤。
+
 ## 0.6.3 — 2026-10-23
 
 ### 新增
