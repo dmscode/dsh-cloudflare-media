@@ -204,8 +204,16 @@ node assets/render.mjs assets/cover.html assets/cover-2x.png 1600 900 2
 ```
 
 ```powershell
-plugin_manager action=set_plugin target=include:cloudflare-media enabled=false
-plugin_manager action=set_plugin target=include:cloudflare-media enabled=true
+# 让助手执行（或自己在 设置 → 插件 → dsh-cloudflare-media 里拨开关）：
+#   set_plugin target=include:cloudflare-media enabled=false
+#   set_plugin target=include:cloudflare-media enabled=true
+```
+
+`plugin_manager` 是模型侧工具，没有 shell 形式；命令行只用来调试时查看/修改 profile：
+
+```powershell
+dsh plugin --profile desktop list          # 看装了哪些包
+dsh plugin --profile desktop remove dsh-cloudflare-media
 ```
 
 ## 维护模型目录
